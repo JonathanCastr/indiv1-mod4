@@ -22,9 +22,6 @@ function Project(name_project, workers){
             this.workers = workers;
         }
     });
-
-}
-
 Project.prototype.obtenerTodosLosTrabajadores = function(){
     let lista_trabajadores = this.trabajadores;
     for (let i = 0; i < lista_trabajadores.length; i++) {
