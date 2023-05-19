@@ -14,11 +14,11 @@ const {
 
 const workerList = localStorage.getItem('workerList')
   ? JSON.parse(localStorage.getItem('workerList'))
-  : [];
+  : {};
 
 const projectList = localStorage.getItem('projectList')
   ? JSON.parse(localStorage.getItem('projectList'))
-  : [];
+  : {};
 
 // constructor functions
 
@@ -26,12 +26,14 @@ function Worker(name, rut, job) {
   this.name = name;
   this.rut = rut;
   this.job = job;
-  this.id = String(Math.floor(Math.random() * 100000000));
+  this.id = generateId(name);
+  this.projectId = undefined;
 }
 
-function Project(projectName, workers) {
+function Project(projectName, workers, id) {
   this.projectName = projectName;
   this._workers = workers;
+  this.id = id;
 
   Object.defineProperty(this, 'workers', {
     get: function () {
@@ -51,8 +53,12 @@ Project.prototype.getAllWorkers = function () {
 
 function createWorkersSelectorOnDOM() {
   let checkboxInputs = '';
-  workerList.forEach((worker) => {
-    const { id, name, job } = worker;
+
+  const workers = Object.values(workerList);
+  console.log(workers);
+  workers.forEach((worker) => {
+    const { id, name, job, projectId } = worker;
+    if (projectId) return; // no muestra el trabajador si ya esta asociado a un proyecto
     checkboxInputs += `
     <div>
       <input type="checkbox" id="${id}" name="${name}" class="checkboxInput">
@@ -60,11 +66,20 @@ function createWorkersSelectorOnDOM() {
     </div>
     `;
   });
-  if (checkboxInputs === '') {
+  if (workers.length === 0) {
     workersSelector.innerHTML = '<p>No hay trabajajadores registrados</p>';
-  } else {
-    workersSelector.innerHTML = checkboxInputs;
+    return;
   }
+  if (checkboxInputs === '') {
+    workersSelector.innerHTML =
+      '<p>Todos los trabajadores registrados han sido asignados a un proyecto</p>';
+    return;
+  }
+  workersSelector.innerHTML = checkboxInputs;
+}
+
+function generateId(name) {
+  return name + String(Math.floor(Math.random() * 100000000));
 }
 
 // forms listeners
@@ -73,7 +88,7 @@ registerWorker.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const worker = new Worker(nameworker.value, rut.value, corporatejob.value);
-  workerList.push(worker);
+  workerList[worker.id] = worker;
   localStorage.setItem('workerList', JSON.stringify(workerList));
   createWorkersSelectorOnDOM();
 
@@ -95,22 +110,31 @@ formRegisterNewProject.addEventListener('submit', (e) => {
     }
   });
 
-  // objeto con los trabajadores indexados por id
-  const workerListById = workerList.reduce(
-    (acc, worker) => ({ ...acc, [worker.id]: worker }),
+  // genera un id para el proyecto. Lo generamos antes para poder setearlo en los trabajadores asignados
+  const projectId = generateId(nameProject.value);
+
+  // asigna el id del proyecto a la propiedad projectId de cada trabajador asignado al proyecto
+  selectedWorkersIds.forEach((id) => {
+    workerList[id].projectId = projectId;
+    localStorage.setItem('workerList', JSON.stringify(workerList));
+  });
+
+  // objeto con los trabajadores seleccionados indexados por id
+  const selectedWorkers = selectedWorkersIds.reduce(
+    (acc, id) => ({ ...acc, [id]: workerList[id] }),
     {}
   );
 
-  // arreglo con los trabajadores seleccionados
-  const selectedWorkers = selectedWorkersIds.map((id) => workerListById[id]);
+  const project = new Project(nameProject.value, selectedWorkers, projectId);
 
-  const project = new Project(nameProject.value, selectedWorkers);
-
-  projectList.push(project);
+  // agrega el proyecto al objeto projectList con un key equivalente al id del proyecto
+  projectList[project.id] = project;
 
   localStorage.setItem('projectList', JSON.stringify(projectList));
 
   nameProject.value = '';
+
+  createWorkersSelectorOnDOM();
 });
 
 // start
