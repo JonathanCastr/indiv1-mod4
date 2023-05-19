@@ -8,6 +8,11 @@ const {
   nameProject,
   workers,
   workersSelector,
+  workerListTag,
+  projectListTag,
+  workerFinder,
+  searchInput,
+  answer,
 } = window;
 
 // data
@@ -150,5 +155,15 @@ formRegisterNewProject.addEventListener('submit', (e) => {
   createWorkersSelectorOnDOM();
 });
 
+searchForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  console.log(searchInput.value);
+  const name = searchInput.value.trim().toLowerCase();
+
+  const worker = getWorkerByName(name);
+
+  if (!worker) {
+  }
+});
 // start
 createWorkersSelectorOnDOM();
