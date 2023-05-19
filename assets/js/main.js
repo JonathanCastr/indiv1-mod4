@@ -1,11 +1,34 @@
-// const {registerWorker, nameworker, rut, corporateJob,formRegisterNewProject,nameProject,workers} = window;
+const {
+  registerWorker,
+  nameworker,
+  rut,
+  corporatejob,
+  formRegisterNewProject,
+  nameProject,
+  workers,
+} = window;
 
-//const worker1=new Worker(workerNameInput.value, rutInput.value, jobInput.value);
+const workerList = localStorage.getItem('workerList')
+  ? JSON.parse(localStorage.getItem('workerList'))
+  : [];
 
-function Worker(workerName, rut, corporateJob) {
+registerWorker.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const worker = new Worker(nameworker.value, rut.value, corporatejob.value);
+  workerList.push(worker);
+  localStorage.setItem('workerList', JSON.stringify(workerList));
+
+  // limpia formulario
+  nameworker.value= '';
+  rut.value = '';
+  corporatejob.value = '';
+});
+
+function Worker(workerName, rut, corporatejob) {
   this.workerName = workerName;
   this.rut = rut;
-  this.corporateJob = corporateJob;
+  this.corporateJob = corporatejob;
 }
 
 function Project(projectName, workers) {
@@ -22,18 +45,11 @@ function Project(projectName, workers) {
   });
 }
 
-Project.prototype.obtenerTodosLosTrabajadores = function () {
+Project.prototype.getAllWorkers = function () {
   return this.workers;
 };
 
-const trabajador1 = new Worker('Daniela', '1341234', 'operador');
-const trabajador2 = new Worker('Pedrito', '1234', 'operador');
-const trabajador3 = new Worker('jorgito', '1235', 'jefe');
 
-const project1 = new Project('impresion de poleras', [
-  trabajador1,
-  trabajador2,
-  trabajador3,
-]);
+function createWorkersSelectorOnDOM() {
 
-console.log('trabajador: ', project1.obtenerTodosLosTrabajadores());
+}
