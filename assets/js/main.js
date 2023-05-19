@@ -96,7 +96,7 @@ function generateId(name) {
 
 function getWorkerByName(name) {
   const workers = Object.values(workerList);
-  const worker = workers.find((worker) => worker.name === name);
+  const worker = workers.find((worker) => worker.name.toLowerCase() === name);
   return worker;
 }
 
@@ -155,7 +155,7 @@ formRegisterNewProject.addEventListener('submit', (e) => {
   createWorkersSelectorOnDOM();
 });
 
-searchForm.addEventListener('submit', (e) => {
+workerFinder.addEventListener('submit', (e) => {
   e.preventDefault();
   console.log(searchInput.value);
   const name = searchInput.value.trim().toLowerCase();
@@ -163,7 +163,17 @@ searchForm.addEventListener('submit', (e) => {
   const worker = getWorkerByName(name);
 
   if (!worker) {
+    answer.innerHTML = '<p>No se ha encontrado el trabajador</p>';
+    return;
   }
+  answer.innerHTML = `
+  <p>nombre: ${worker.name}</p>
+  <p>rut: ${worker.rut}</p>
+  <p>id: ${worker.id}</p>
+  <p>cargo: ${worker.job}</p>
+  <p>Proyecto asignado: ${
+    projectList[worker.projectId].name || 'no tiene proyecto asignado'
+  }</p>`;
 });
 // start
 createWorkersSelectorOnDOM();
