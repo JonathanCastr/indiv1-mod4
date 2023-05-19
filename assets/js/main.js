@@ -49,6 +49,13 @@ Project.prototype.getAllWorkers = function () {
   return this.workers;
 };
 
+// Esta funcion no se ocupara por ahora porque buscaremos trabajadores en toda la empresa, no en un proyecto
+Project.prototype.getWorkerByName = function (name) {
+  const workers = Object.values(this.workers);
+  const worker = workers.find((worker) => worker.name === name);
+  return worker;
+};
+
 // functions
 
 function createWorkersSelectorOnDOM() {
@@ -80,6 +87,12 @@ function createWorkersSelectorOnDOM() {
 
 function generateId(name) {
   return name + String(Math.floor(Math.random() * 100000000));
+}
+
+function getWorkerByName(name) {
+  const workers = Object.values(workerList);
+  const worker = workers.find((worker) => worker.name === name);
+  return worker;
 }
 
 // forms listeners
