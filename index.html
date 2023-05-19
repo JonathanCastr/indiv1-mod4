@@ -17,9 +17,14 @@
                 <div class="container"><button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
                     <div id="navcol-1" class="collapse navbar-collapse">
                         <ul class="navbar-nav"></ul><a class="navbar-brand mx-auto" href="#">Constructora Pérez Cotapo</a>
-                        <form class="me-auto search-form" target="_self">
-                            <div class="d-flex align-items-center"><label class="form-label d-flex mb-0" id="searchField" for="search-field"></label></div>
-                        </form><i class="fa fa-search"></i><input id="btnSearch" class="search-field" type="search" name="search" /><a class="btn btn-light action-button" role="button" href="#">Buscar </a>
+                        <form id="workerFinder">
+                            <div id="answer">
+                                <p>
+                                    Búsqueda de Trabajador <input type="search" id="searchInput" name="workerFind" placeholder="Nombre en minusculas">
+                                    <input type="submit" value="Buscar">
+                                </p>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </nav>
