@@ -8,11 +8,9 @@ const {
   nameProject,
   workers,
   workersSelector,
-  workerListTag,
   projectListTag,
   workerFinder,
   searchInput,
-  answer,
 } = window;
 
 // data
@@ -152,6 +150,35 @@ formRegisterNewProject.addEventListener('submit', (e) => {
 
   nameProject.value = '';
 
+  let projects = '';
+
+  const projectListArr = Object.values(projectList);
+
+  if (projectListArr.length === 0) {
+    projectListTag.innerHTML = 'No hay proyectos creados';
+  }
+
+  projectListArr.forEach((project) => {
+    let workersPrint = '';
+
+    // APRENDIZAJE!!!!!!!!!! al transformar a JSON se perdieron los metodos
+    // console.log(project.__proto__)
+    // const workers = project.getAllWorkers();
+
+    // workers.forEach((worker) => {
+    //   workersPrint += `<li>${worker.name}</li>`;
+    // });
+    projects += `
+    <p>${project.projectName}</p>\n
+    
+    <br>
+    `;
+    // <ul>${workersPrint}</ul>
+
+  });
+
+  projectListTag.innerHTML = projects;
+
   createWorkersSelectorOnDOM();
 });
 
@@ -163,17 +190,18 @@ workerFinder.addEventListener('submit', (e) => {
   const worker = getWorkerByName(name);
 
   if (!worker) {
-    answer.innerHTML = '<p>No se ha encontrado el trabajador</p>';
+    alert('No se ha encontrado el trabajador');
     return;
   }
-  answer.innerHTML = `
-  <p>nombre: ${worker.name}</p>
-  <p>rut: ${worker.rut}</p>
-  <p>id: ${worker.id}</p>
-  <p>cargo: ${worker.job}</p>
-  <p>Proyecto asignado: ${
-    projectList[worker.projectId].name || 'no tiene proyecto asignado'
-  }</p>`;
+  const asignedProject =
+    projectList[worker.projectId].projectName || 'no tiene proyecto asignado';
+
+  alert(`
+  nombre: ${worker.name}\n
+  rut: ${worker.rut}\n   
+  cargo: ${worker.job}\n
+  Proyecto asignado: ${asignedProject}`);
 });
 // start
 createWorkersSelectorOnDOM();
+console.log(projectList);
