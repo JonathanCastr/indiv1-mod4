@@ -67,7 +67,7 @@ function createWorkersSelectorOnDOM() {
     `;
   });
   if (workers.length === 0) {
-    workersSelector.innerHTML = '<p>No hay trabajajadores registrados</p>';
+    workersSelector.innerHTML = '<p>No hay trabajadores registrados</p>';
     return;
   }
   if (checkboxInputs === '') {
