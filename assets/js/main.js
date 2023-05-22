@@ -19,9 +19,7 @@ const workerList = localStorage.getItem('workerList')
   ? JSON.parse(localStorage.getItem('workerList'))
   : {};
 
-const projectList = localStorage.getItem('projectList')
-  ? JSON.parse(localStorage.getItem('projectList'))
-  : {};
+const projectList = getProjectListFromLocalStorage();
 
 // constructor functions
 
@@ -48,6 +46,7 @@ function Project(projectName, workers, id) {
   });
 }
 
+// Entrega todos los trabajadores del proyecto que la llama
 Project.prototype.getAllWorkers = function () {
   return this.workers;
 };
@@ -61,11 +60,24 @@ Project.prototype.getWorkerByName = function (name) {
 
 // functions
 
+// recupera los projectos del localStorage y los entrega a Project para reasignarles los metodos
+function getProjectListFromLocalStorage() {
+  if (localStorage.getItem('projectList')) {
+    const temp = JSON.parse(localStorage.getItem('projectList'));
+    const projectList = Object.values(temp).map((project) => {
+      return new Project(project.projectName, project._workers, project.id);
+    });
+    return projectList;
+  } else {
+    return {};
+  }
+}
+
+// Muestra en el formulario de proyectos los trabajadores registrados que no se han asigmado a ningun proyecto
 function createWorkersSelectorOnDOM() {
   let checkboxInputs = '';
 
   const workers = Object.values(workerList);
-  console.log(workers);
   workers.forEach((worker) => {
     const { id, name, job, projectId } = worker;
     if (projectId) return; // no muestra el trabajador si ya esta asociado a un proyecto
@@ -86,6 +98,39 @@ function createWorkersSelectorOnDOM() {
     return;
   }
   workersSelector.innerHTML = checkboxInputs;
+}
+
+// Muestra los proyectos creados
+function createProjectListOnDOM() {
+  let projects = '';
+
+  const projectListArr = Object.values(projectList);
+  console.log(projectListArr);
+  if (projectListArr.length === 0) {
+    projectListTag.innerHTML = 'No hay proyectos creados';
+    return;
+  }
+
+  projectListArr.forEach((project) => {
+    let workersPrint = '';
+
+    console.log(project.__proto__);
+    const workers = project.getAllWorkers();
+
+    Object.values(workers).forEach((worker) => {
+      workersPrint += `<li>${worker.name} (${worker.job})</li>`;
+    });
+    projects += `
+    <p>Nombre del proyecto: ${project.projectName}</p>\n
+    <p>Trabajadores asignados: </p>
+    <ul>${workersPrint}</ul>
+    <br>
+    <hr>
+    <br>
+    `;
+  });
+
+  projectListTag.innerHTML = projects;
 }
 
 function generateId(name) {
@@ -116,7 +161,7 @@ registerWorker.addEventListener('submit', (e) => {
 
 formRegisterNewProject.addEventListener('submit', (e) => {
   e.preventDefault();
-  // arreglo con los ids de los trabajadores selecionados
+  // arreglo con los ids de los trabajadores selecionados en el formulario
   let selectedWorkersIds = [];
   const inputs = document.querySelectorAll('.checkboxInput');
   inputs.forEach((input) => {
@@ -145,41 +190,13 @@ formRegisterNewProject.addEventListener('submit', (e) => {
 
   // agrega el proyecto al objeto projectList con un key equivalente al id del proyecto
   projectList[project.id] = project;
-
+  console.log(projectList);
   localStorage.setItem('projectList', JSON.stringify(projectList));
-
+  console.log(JSON.parse(localStorage.getItem('projectList')));
   nameProject.value = '';
 
-  let projects = '';
-
-  const projectListArr = Object.values(projectList);
-
-  if (projectListArr.length === 0) {
-    projectListTag.innerHTML = 'No hay proyectos creados';
-  }
-
-  projectListArr.forEach((project) => {
-    let workersPrint = '';
-
-    // APRENDIZAJE!!!!!!!!!! al transformar a JSON se perdieron los metodos
-    // console.log(project.__proto__)
-    // const workers = project.getAllWorkers();
-
-    // workers.forEach((worker) => {
-    //   workersPrint += `<li>${worker.name}</li>`;
-    // });
-    projects += `
-    <p>${project.projectName}</p>\n
-    
-    <br>
-    `;
-    // <ul>${workersPrint}</ul>
-
-  });
-
-  projectListTag.innerHTML = projects;
-
   createWorkersSelectorOnDOM();
+  createProjectListOnDOM();
 });
 
 workerFinder.addEventListener('submit', (e) => {
@@ -202,6 +219,8 @@ workerFinder.addEventListener('submit', (e) => {
   cargo: ${worker.job}\n
   Proyecto asignado: ${asignedProject}`);
 });
+
 // start
 createWorkersSelectorOnDOM();
+createProjectListOnDOM();
 console.log(projectList);
